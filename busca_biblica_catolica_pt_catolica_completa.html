@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Busca Bíblica Católica</title>
+  <style>
+    :root {
+      --bg: #020617;
+      --panel: rgba(15, 23, 42, 0.86);
+      --panel-2: rgba(2, 6, 23, 0.72);
+      --line: rgba(148, 163, 184, 0.18);
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --primary: #2563eb;
+      --primary-2: #1d4ed8;
+      --success: #10b981;
+      --danger: #f43f5e;
+      --shadow: 0 30px 60px rgba(15, 23, 42, 0.35);
+      --radius: 22px;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(37, 99, 235, 0.22), transparent 30%),
+        radial-gradient(circle at top right, rgba(99, 102, 241, 0.18), transparent 28%),
+        linear-gradient(180deg, #020617, #0f172a 60%, #020617);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    .container { max-width: 1180px; margin: 0 auto; padding: 28px 18px 40px; }
+    .hero {
+      background: linear-gradient(135deg, rgba(37,99,235,0.94), rgba(67,56,202,0.92) 55%, rgba(15,23,42,0.96));
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 30px;
+      padding: 28px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      position: relative;
+    }
+    .hero::after {
+      content: "";
+      position: absolute;
+      width: 360px;
+      height: 360px;
+      border-radius: 999px;
+      right: -120px;
+      top: -120px;
+      background: radial-gradient(circle, rgba(255,255,255,0.18), transparent 65%);
+      pointer-events: none;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.16);
+      background: rgba(255,255,255,0.08);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: #dbeafe;
+      font-weight: 700;
+    }
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.3fr 0.7fr;
+      gap: 22px;
+      align-items: center;
+      position: relative;
+      z-index: 1;
+    }
+    h1 {
+      margin: 14px 0 8px;
+      font-size: clamp(2rem, 3vw, 3.45rem);
+      line-height: 1.02;
+      letter-spacing: -0.03em;
+    }
+    .lead { margin: 0; max-width: 760px; line-height: 1.8; color: rgba(239,246,255,0.92); }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .stat {
+      background: rgba(255,255,255,0.10);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 22px;
+      padding: 16px;
+      min-height: 108px;
+      backdrop-filter: blur(8px);
+    }
+    .stat strong { display: block; font-size: 1.8rem; margin-bottom: 8px; }
+    .stat span { color: #dbeafe; opacity: 0.92; line-height: 1.5; }
+
+    .grid { display: grid; grid-template-columns: 0.95fr 1.05fr; gap: 24px; margin-top: 24px; }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      padding: 22px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(12px);
+    }
+    .card h2 { margin: 0 0 6px; font-size: 1.35rem; }
+    .sub { margin: 0 0 18px; color: var(--muted); line-height: 1.75; font-size: .97rem; }
+
+    label {
+      display: block;
+      margin: 0 0 8px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #cbd5e1;
+    }
+    input {
+      width: 100%;
+      border-radius: 18px;
+      border: 1px solid rgba(100, 116, 139, 0.35);
+      background: rgba(2, 6, 23, 0.92);
+      color: white;
+      padding: 15px 16px;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.2s ease, transform 0.15s ease;
+    }
+    input:focus {
+      border-color: rgba(59, 130, 246, 0.95);
+      transform: translateY(-1px);
+    }
+    .row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+    .buttons { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 18px; }
+    button {
+      cursor: pointer; border: 0; border-radius: 18px; padding: 14px 18px;
+      font-weight: 700; font-size: .95rem; transition: transform .18s ease, opacity .18s ease, background .18s ease;
+    }
+    button:hover { transform: translateY(-1px); }
+    button.primary { background: linear-gradient(180deg, var(--primary), var(--primary-2)); color: white; }
+    button.secondary { background: rgba(30, 41, 59, 0.95); border: 1px solid rgba(100, 116, 139, 0.35); color: white; }
+    button.chip {
+      background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(100, 116, 139, 0.34); color: #e2e8f0;
+      border-radius: 999px; padding: 10px 13px; font-size: 0.82rem;
+    }
+    button.chip.active { background: rgba(37, 99, 235, 0.20); border-color: rgba(96, 165, 250, 0.72); color: #dbeafe; }
+    button:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+    .hint-box {
+      border-radius: 22px; padding: 16px; margin-top: 18px; background: rgba(2, 6, 23, 0.6); border: 1px solid rgba(51, 65, 85, 0.92);
+    }
+    .hint-title { font-size: .78rem; text-transform: uppercase; letter-spacing: .18em; color: var(--muted); font-weight: 800; }
+    .chips { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
+    .suggestions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+
+    .result-shell {
+      min-height: 500px; border-radius: 24px; background: rgba(2, 6, 23, 0.5); border: 1px solid rgba(51, 65, 85, 0.64);
+      padding: 18px;
+    }
+    .placeholder {
+      min-height: 460px; display: flex; align-items: center; justify-content: center; flex-direction: column; text-align: center;
+      border: 1px dashed rgba(100, 116, 139, 0.45); border-radius: 20px; background: rgba(2,6,23,0.44);
+      color: var(--muted); padding: 20px;
+    }
+    .placeholder .icon { font-size: 54px; margin-bottom: 12px; }
+    .heading-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 16px; }
+    .tag {
+      border-radius: 999px; border: 1px solid rgba(16, 185, 129, 0.28); background: rgba(16, 185, 129, 0.12); color: #d1fae5;
+      padding: 8px 12px; font-size: .82rem; font-weight: 700; white-space: nowrap;
+    }
+    .notice, .error {
+      border-radius: 20px; padding: 14px 16px; margin-bottom: 14px; line-height: 1.7;
+    }
+    .notice { background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.24); color: #d1fae5; }
+    .error { background: rgba(244, 63, 94, 0.10); border: 1px solid rgba(244, 63, 94, 0.28); color: #fecdd3; }
+    .reference-card, .text-card {
+      border-radius: 22px; border: 1px solid rgba(51, 65, 85, 0.74); background: rgba(2, 6, 23, 0.58); padding: 18px;
+    }
+    .reference-card h3 { margin: 8px 0 0; font-size: clamp(1.5rem, 2vw, 2rem); }
+    .reference-card p { margin: 12px 0 0; color: var(--muted); line-height: 1.7; }
+    .verse-list { display: grid; gap: 16px; }
+    .verse {
+      line-height: 1.95; font-size: 1.02rem; color: #f8fafc;
+    }
+    .verse-number {
+      display: inline-flex; align-items: center; justify-content: center; min-width: 34px; height: 28px; border-radius: 10px;
+      background: rgba(37, 99, 235, 0.16); color: #bfdbfe; font-weight: 800; margin-right: 10px; font-size: .92rem;
+      vertical-align: text-top;
+    }
+    .footer-note {
+      margin-top: 16px; color: var(--muted); font-size: .88rem; line-height: 1.7;
+    }
+    .share-link {
+      margin-top: 10px; color: #93c5fd; word-break: break-all; font-size: .88rem;
+    }
+    .loading { display: inline-flex; align-items: center; gap: 10px; }
+    .dot {
+      width: 10px; height: 10px; border-radius: 999px; background: #93c5fd; opacity: .5; animation: pulse 1.2s infinite ease-in-out;
+    }
+    .dot:nth-child(2) { animation-delay: .15s; }
+    .dot:nth-child(3) { animation-delay: .30s; }
+    @keyframes pulse {
+      0%, 80%, 100% { transform: scale(.8); opacity: .35; }
+      40% { transform: scale(1); opacity: 1; }
+    }
+
+    @media (max-width: 980px) {
+      .hero-grid, .grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 640px) {
+      .row { grid-template-columns: 1fr; }
+      .container { padding-inline: 14px; }
+      .hero, .card { padding: 18px; }
+      .buttons { flex-direction: column; }
+      button { width: 100%; }
+      .heading-row { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <section class="hero">
+      <div class="hero-grid">
+        <div>
+          <div class="badge">✨ App web para compartilhar com amigos</div>
+          <h1>Busca Bíblica Católica</h1>
+          <p class="lead">Pesquise por <strong>livro escrito</strong>, <strong>capítulo</strong>, <strong>versículo de início</strong> e <strong>versículo de fim</strong>. O app também gera um link compartilhável com a referência pronta.</p>
+        </div>
+        <div class="stats">
+          <div class="stat"><strong>73</strong><span>livros do cânon católico mapeados no formulário</span></div>
+          <div class="stat"><strong>🔎</strong><span>busca por referência com intervalo de versículos</span></div>
+          <div class="stat"><strong>🔗</strong><span>link compartilhável para mandar aos amigos</span></div>
+          <div class="stat"><strong>📱</strong><span>funciona bem em celular e desktop</span></div>
+        </div>
+      </div>
+    </section>
+
+    <main class="grid">
+      <section class="card">
+        <h2>Pesquisar passagem</h2>
+        <p class="sub">Digite o livro por extenso ou abreviação. Exemplos: João, Tobias, Sabedoria, 1 Macabeus.</p>
+
+        <form id="searchForm">
+          <div>
+            <label for="bookInput">Livro</label>
+            <input id="bookInput" list="livrosCatolicos" placeholder="Ex.: João" autocomplete="off" />
+            <datalist id="livrosCatolicos"></datalist>
+            <div id="suggestions" class="suggestions"></div>
+          </div>
+
+          <div class="row" style="margin-top: 16px;">
+            <div>
+              <label for="chapterInput">Capítulo</label>
+              <input id="chapterInput" type="number" min="1" value="3" />
+            </div>
+            <div>
+              <label for="startInput">Versículo inicial</label>
+              <input id="startInput" type="number" min="1" value="16" />
+            </div>
+            <div>
+              <label for="endInput">Versículo final</label>
+              <input id="endInput" type="number" min="1" value="16" />
+            </div>
+          </div>
+
+          <div class="buttons">
+            <button class="primary" id="searchBtn" type="submit">Buscar passagem</button>
+            <button class="secondary" id="copyBtn" type="button">Copiar link</button>
+          </div>
+        </form>
+
+        <div class="hint-box">
+          <div class="hint-title">Exemplos rápidos</div>
+          <div class="chips">
+            <button class="chip" data-example='{"book":"João","chapter":3,"start":16,"end":16}'>João 3:16</button>
+            <button class="chip" data-example='{"book":"Sabedoria","chapter":3,"start":1,"end":9}'>Sabedoria 3:1-9</button>
+            <button class="chip" data-example='{"book":"Tobias","chapter":12,"start":6,"end":10}'>Tobias 12:6-10</button>
+            <button class="chip" data-example='{"book":"1 Macabeus","chapter":2,"start":49,"end":64}'>1 Macabeus 2:49-64</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="heading-row">
+          <div>
+            <h2>Resultado</h2>
+            <p class="sub">A passagem aparecerá aqui em um formato limpo para leitura e compartilhamento.</p>
+          </div>
+          <div id="resultTag" class="tag" style="display:none"></div>
+        </div>
+
+        <div class="result-shell" id="resultShell">
+          <div class="placeholder" id="placeholder">
+            <div class="icon">📖</div>
+            <strong>Escolha uma referência</strong>
+            <p>Digite o livro, o capítulo e o intervalo de versículos. Depois clique em <strong>Buscar passagem</strong>.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const BIBLE_SOURCE_URL = "https://raw.githubusercontent.com/Dancrf/biblia-db/main/biblia.json";
+    const BIBLE_SOURCE_NAME = "Bíblia Católica em português — Padre Manuel de Matos Soares (1956)";
+
+    const BOOKS = [
+      { pt: "Gênesis", slug: "genesis", aliases: ["genesis", "gênesis", "gn"] },
+      { pt: "Êxodo", slug: "exodus", aliases: ["exodo", "êxodo", "ex"] },
+      { pt: "Levítico", slug: "leviticus", aliases: ["levitico", "levítico", "lv"] },
+      { pt: "Números", slug: "numbers", aliases: ["numeros", "números", "nm"] },
+      { pt: "Deuteronômio", slug: "deuteronomy", aliases: ["deuteronomio", "deuteronômio", "dt"] },
+      { pt: "Josué", slug: "josue", aliases: ["josue", "josué", "js"] },
+      { pt: "Juízes", slug: "judges", aliases: ["juizes", "juízes", "jz"] },
+      { pt: "Rute", slug: "ruth", aliases: ["rute", "rt"] },
+      { pt: "1 Samuel", slug: "1-kings", aliases: ["1 samuel", "1samuel", "1sm", "i samuel"] },
+      { pt: "2 Samuel", slug: "2-kings", aliases: ["2 samuel", "2samuel", "2sm", "ii samuel"] },
+      { pt: "1 Reis", slug: "3-kings", aliases: ["1 reis", "1reis", "1rs", "i reis"] },
+      { pt: "2 Reis", slug: "4-kings", aliases: ["2 reis", "2reis", "2rs", "ii reis"] },
+      { pt: "1 Crônicas", slug: "1-paralipomenon", aliases: ["1 cronicas", "1 crônicas", "1cr", "i cronicas", "i crônicas"] },
+      { pt: "2 Crônicas", slug: "2-paralipomenon", aliases: ["2 cronicas", "2 crônicas", "2cr", "ii cronicas", "ii crônicas"] },
+      { pt: "Esdras", slug: "1-esdras", aliases: ["esdras", "ed", "ezra"] },
+      { pt: "Neemias", slug: "2-esdras", aliases: ["neemias", "ne", "nehemias"] },
+      { pt: "Tobias", slug: "tobias", aliases: ["tobias", "tb"] },
+      { pt: "Judite", slug: "judith", aliases: ["judite", "jdt"] },
+      { pt: "Ester", slug: "esther", aliases: ["ester", "est"] },
+      { pt: "Jó", slug: "job", aliases: ["jo", "jó", "job"] },
+      { pt: "Salmos", slug: "psalms", aliases: ["salmos", "sl", "psalms", "ps"] },
+      { pt: "Provérbios", slug: "proverbs", aliases: ["proverbios", "provérbios", "pr"] },
+      { pt: "Eclesiastes", slug: "ecclesiastes", aliases: ["eclesiastes", "ec"] },
+      { pt: "Cântico dos Cânticos", slug: "canticle-of-canticles", aliases: ["cantico dos canticos", "cântico dos cânticos", "canticos", "ct"] },
+      { pt: "Sabedoria", slug: "wisdom", aliases: ["sabedoria", "sb"] },
+      { pt: "Eclesiástico", slug: "ecclesiasticus", aliases: ["eclesiastico", "eclesiástico", "siracida", "sirac", "sr"] },
+      { pt: "Isaías", slug: "isaie", aliases: ["isaias", "isaías", "is"] },
+      { pt: "Jeremias", slug: "jeremie", aliases: ["jeremias", "jr"] },
+      { pt: "Lamentações", slug: "lamentations", aliases: ["lamentacoes", "lamentações", "lm"] },
+      { pt: "Baruc", slug: "baruch", aliases: ["baruc", "baruch", "br"] },
+      { pt: "Ezequiel", slug: "ezechiel", aliases: ["ezequiel", "ez"] },
+      { pt: "Daniel", slug: "daniel", aliases: ["daniel", "dn"] },
+      { pt: "Oséias", slug: "osee", aliases: ["oseias", "oséias", "os"] },
+      { pt: "Joel", slug: "joel", aliases: ["joel", "jl"] },
+      { pt: "Amós", slug: "amos", aliases: ["amos", "amós", "am"] },
+      { pt: "Abdias", slug: "abdias", aliases: ["abdias", "ab"] },
+      { pt: "Jonas", slug: "jonas", aliases: ["jonas", "jns"] },
+      { pt: "Miqueias", slug: "micheas", aliases: ["miqueias", "miquéias", "mq"] },
+      { pt: "Naum", slug: "nahum", aliases: ["naum", "na"] },
+      { pt: "Habacuque", slug: "habacuc", aliases: ["habacuque", "hc"] },
+      { pt: "Sofonias", slug: "sophonias", aliases: ["sofonias", "sf"] },
+      { pt: "Ageu", slug: "aggeus", aliases: ["ageu", "ag"] },
+      { pt: "Zacarias", slug: "zacharias", aliases: ["zacarias", "zc"] },
+      { pt: "Malaquias", slug: "malachie", aliases: ["malaquias", "ml"] },
+      { pt: "1 Macabeus", slug: "1-machabees", aliases: ["1 macabeus", "1macabeus", "i macabeus", "1mc"] },
+      { pt: "2 Macabeus", slug: "2-machabees", aliases: ["2 macabeus", "2macabeus", "ii macabeus", "2mc"] },
+      { pt: "Mateus", slug: "matthew", aliases: ["mateus", "mt"] },
+      { pt: "Marcos", slug: "mark", aliases: ["marcos", "mc"] },
+      { pt: "Lucas", slug: "luke", aliases: ["lucas", "lc"] },
+      { pt: "João", slug: "john", aliases: ["joao", "joão", "jo"] },
+      { pt: "Atos dos Apóstolos", slug: "acts", aliases: ["atos", "atos dos apostolos", "atos dos apóstolos", "at"] },
+      { pt: "Romanos", slug: "romans", aliases: ["romanos", "rm"] },
+      { pt: "1 Coríntios", slug: "1-corinthians", aliases: ["1 corintios", "1 coríntios", "1cor", "i corintios", "i coríntios"] },
+      { pt: "2 Coríntios", slug: "2-corinthians", aliases: ["2 corintios", "2 coríntios", "2cor", "ii corintios", "ii coríntios"] },
+      { pt: "Gálatas", slug: "galatians", aliases: ["galatas", "gálatas", "gl"] },
+      { pt: "Efésios", slug: "ephesians", aliases: ["efesios", "efésios", "ef"] },
+      { pt: "Filipenses", slug: "philippians", aliases: ["filipenses", "fl"] },
+      { pt: "Colossenses", slug: "colossians", aliases: ["colossenses", "cl"] },
+      { pt: "1 Tessalonicenses", slug: "1-thessalonians", aliases: ["1 tessalonicenses", "1ts", "i tessalonicenses"] },
+      { pt: "2 Tessalonicenses", slug: "2-thessalonians", aliases: ["2 tessalonicenses", "2ts", "ii tessalonicenses"] },
+      { pt: "1 Timóteo", slug: "1-timothy", aliases: ["1 timoteo", "1 timóteo", "1tm", "i timoteo", "i timóteo"] },
+      { pt: "2 Timóteo", slug: "2-timothy", aliases: ["2 timoteo", "2 timóteo", "2tm", "ii timoteo", "ii timóteo"] },
+      { pt: "Tito", slug: "titus", aliases: ["tito", "tt"] },
+      { pt: "Filêmon", slug: "philemon", aliases: ["filemon", "filêmon", "fm"] },
+      { pt: "Hebreus", slug: "hebrews", aliases: ["hebreus", "hb"] },
+      { pt: "Tiago", slug: "james", aliases: ["tiago", "tg"] },
+      { pt: "1 Pedro", slug: "1-peter", aliases: ["1 pedro", "1pe", "i pedro"] },
+      { pt: "2 Pedro", slug: "2-peter", aliases: ["2 pedro", "2pe", "ii pedro"] },
+      { pt: "1 João", slug: "1-john", aliases: ["1 joao", "1 joão", "1jo", "i joao", "i joão"] },
+      { pt: "2 João", slug: "2-john", aliases: ["2 joao", "2 joão", "2jo", "ii joao", "ii joão"] },
+      { pt: "3 João", slug: "3-john", aliases: ["3 joao", "3 joão", "3jo", "iii joao", "iii joão"] },
+      { pt: "Judas", slug: "jude", aliases: ["judas", "jd"] },
+      { pt: "Apocalipse", slug: "apocalypse", aliases: ["apocalipse", "ap"] },
+    ];
+
+    const cache = new Map();
+    const bookInput = document.getElementById("bookInput");
+    const chapterInput = document.getElementById("chapterInput");
+    const startInput = document.getElementById("startInput");
+    const endInput = document.getElementById("endInput");
+    const searchForm = document.getElementById("searchForm");
+    const resultShell = document.getElementById("resultShell");
+    const placeholder = document.getElementById("placeholder");
+    const suggestions = document.getElementById("suggestions");
+    const datalist = document.getElementById("livrosCatolicos");
+    const resultTag = document.getElementById("resultTag");
+    const copyBtn = document.getElementById("copyBtn");
+
+    datalist.innerHTML = BOOKS.map((book) => `<option value="${book.pt}"></option>`).join("");
+
+    function normalize(text) {
+      return (text || "")
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^a-z0-9\s]/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+    }
+
+    function resolveBook(input) {
+      const token = normalize(input);
+      if (!token) return null;
+
+      const exact = BOOKS.find((book) => [book.pt, book.slug, ...(book.aliases || [])].some((v) => normalize(v) === token));
+      if (exact) return exact;
+
+      const contains = BOOKS.find((book) => normalize(book.pt).includes(token));
+      if (contains) return contains;
+
+      return BOOKS.find((book) => (book.aliases || []).some((v) => normalize(v).includes(token))) || null;
+    }
+
+    function updateSuggestions() {
+      const q = normalize(bookInput.value);
+      const selected = resolveBook(bookInput.value);
+      let list = BOOKS;
+      if (q) {
+        list = BOOKS.filter((book) => [book.pt, ...(book.aliases || [])].map(normalize).some((v) => v.includes(q)));
+      }
+      list = list.slice(0, 10);
+      suggestions.innerHTML = list.map((book) => {
+        const active = selected && selected.slug === book.slug ? "active" : "";
+        return `<button type="button" class="chip ${active}" data-book="${book.pt}">${book.pt}</button>`;
+      }).join("");
+      suggestions.querySelectorAll("button").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          bookInput.value = btn.dataset.book;
+          updateSuggestions();
+        });
+      });
+    }
+
+    function removeTags(text) { return String(text || "").replace(/<[^>]+>/g, ""); }
+    function verseLabel(start, end) {
+      if (!start && !end) return "capítulo inteiro";
+      if (start && end && start !== end) return `versículos ${start}\u2013${end}`;
+      return `versículo ${start || end}`;
+    }
+    function buildShareUrl(book, chapter, start, end) {
+      const params = new URLSearchParams();
+      params.set("livro", book.pt);
+      params.set("capitulo", String(chapter || ""));
+      params.set("inicio", String(start || ""));
+      params.set("fim", String(end || ""));
+      return `${window.location.origin}${window.location.pathname}?${params.toString()}`;
+    }
+    function setLoading() {
+      resultTag.style.display = "none";
+      placeholder.style.display = "none";
+      resultShell.innerHTML = `
+        <div class="placeholder" style="border-style: solid;">
+          <div class="loading"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+          <p style="margin-top: 18px;">Buscando a passagem...</p>
+        </div>`;
+    }
+    function setError(message) {
+      resultTag.style.display = "none";
+      placeholder.style.display = "none";
+      resultShell.innerHTML = `<div class="error">${message}</div>`;
+    }
+    function renderResult({ book, chapter, verses }) {
+      const start = verses[0]?.verse;
+      const end = verses[verses.length - 1]?.verse;
+      const shareUrl = buildShareUrl(book, chapter, startInput.value, endInput.value);
+      resultTag.style.display = "inline-flex";
+      resultTag.textContent = `${book.pt} ${chapter}:${start}${verses.length > 1 ? `-${end}` : ""}`;
+      resultShell.innerHTML = `
+        <div class="reference-card">
+          <div style="font-size:.78rem;text-transform:uppercase;letter-spacing:.18em;color:#94a3b8;font-weight:800;">Referência</div>
+          <h3>${book.pt} ${chapter} · ${verseLabel(start, end)}</h3>
+          <p>Texto carregado sob demanda para deixar a experiência rápida no navegador. O link abaixo mantém a referência preenchida para compartilhar.</p>
+          <div class="share-link">${shareUrl}</div>
+        </div>
+        <div class="text-card" style="margin-top: 14px;">
+          <div class="verse-list">
+            ${verses.map((verse) => `<div class="verse"><span class="verse-number">${verse.verse}</span>${removeTags(verse.text)}</div>`).join("")}
+          </div>
+        </div>
+        <div class="footer-note">Dica: use o botão <strong>Copiar link</strong> para mandar essa passagem pronta no WhatsApp, Telegram ou onde quiser.</div>
+      `;
+    }
+
+    async function fetchBible() {
+      const cacheKey = "__biblia_catolica_pt__";
+      if (cache.has(cacheKey)) return cache.get(cacheKey);
+      const response = await fetch(BIBLE_SOURCE_URL);
+      if (!response.ok) throw new Error("Não foi possível carregar a Bíblia católica em português agora.");
+      const payload = await response.json();
+      cache.set(cacheKey, payload);
+      return payload;
+    }
+
+    function findFirstArray(node, depth = 0) {
+      if (depth > 6 || node == null) return null;
+      if (Array.isArray(node) && node.some((item) => item && typeof item === "object")) return node;
+      if (typeof node !== "object") return null;
+      for (const value of Object.values(node)) {
+        const found = findFirstArray(value, depth + 1);
+        if (found) return found;
+      }
+      return null;
+    }
+
+    function extractBookEntries(payload) {
+      if (Array.isArray(payload)) return payload;
+      if (!payload || typeof payload !== "object") return [];
+
+      const directKeys = ["livros", "books", "biblia", "bible", "data"];
+      for (const key of directKeys) {
+        if (Array.isArray(payload[key])) return payload[key];
+      }
+
+      return findFirstArray(payload) || [];
+    }
+
+    function getBookLabels(entry) {
+      const labels = new Set();
+      const push = (value) => {
+        if (typeof value === "string" && value.trim()) labels.add(normalize(value));
+      };
+
+      if (!entry || typeof entry !== "object") return [];
+
+      [
+        "pt", "name", "nome", "livro", "book", "title", "titulo", "título",
+        "abbrev", "abreviacao", "abreviação", "sigla", "slug", "id"
+      ].forEach((key) => push(entry[key]));
+
+      [entry.aliases, entry.alias, entry.names, entry.nomes].forEach((collection) => {
+        if (Array.isArray(collection)) collection.forEach(push);
+      });
+
+      return [...labels].filter(Boolean);
+    }
+
+    function findBookData(payload, book) {
+      const entries = extractBookEntries(payload);
+      const wanted = new Set([
+        normalize(book.pt),
+        normalize(book.slug),
+        ...((book.aliases || []).map(normalize))
+      ]);
+
+      const exact = entries.find((entry) => getBookLabels(entry).some((label) => wanted.has(label)));
+      if (exact) return exact;
+
+      return entries.find((entry) => {
+        const labels = getBookLabels(entry);
+        return labels.some((label) => [...wanted].some((needle) => label.includes(needle) || needle.includes(label)));
+      }) || null;
+    }
+
+    function getChapterCollection(bookData) {
+      if (!bookData) return null;
+      if (Array.isArray(bookData)) return bookData;
+      const keys = ["chapters", "capitulos", "capítulos"];
+      for (const key of keys) {
+        if (bookData[key] != null) return bookData[key];
+      }
+      return null;
+    }
+
+    function findChapterData(bookData, chapterNumber) {
+      const chapters = getChapterCollection(bookData);
+
+      if (Array.isArray(chapters)) {
+        const exact = chapters.find((item) => Number(item?.chapter ?? item?.capitulo ?? item?.capítulo ?? item?.number ?? item?.numero ?? item?.número) === chapterNumber);
+        if (exact != null) return exact;
+        return chapters[chapterNumber - 1] ?? null;
+      }
+
+      if (chapters && typeof chapters === "object") {
+        return chapters[String(chapterNumber)] ?? chapters[chapterNumber] ?? null;
+      }
+
+      if (bookData && typeof bookData === "object") {
+        return bookData[String(chapterNumber)] ?? bookData[chapterNumber] ?? null;
+      }
+
+      return null;
+    }
+
+    function extractVerses(chapterData) {
+      if (chapterData == null) return [];
+
+      if (Array.isArray(chapterData)) {
+        return chapterData.map((item, index) => {
+          if (typeof item === "string") {
+            return { verse: index + 1, text: item };
+          }
+          if (item && typeof item === "object") {
+            return {
+              verse: Number(item.verse ?? item.versiculo ?? item.versículo ?? item.number ?? item.numero ?? item.número ?? index + 1),
+              text: item.text ?? item.texto ?? item.content ?? item.conteudo ?? item.conteúdo ?? ""
+            };
+          }
+          return null;
+        }).filter((item) => item && item.text);
+      }
+
+      if (typeof chapterData === "object") {
+        const nestedKeys = ["verses", "versiculos", "versículos", "texto", "text"];
+        for (const key of nestedKeys) {
+          if (chapterData[key] != null && chapterData[key] !== chapterData) {
+            return extractVerses(chapterData[key]);
+          }
+        }
+
+        const numericKeys = Object.keys(chapterData).filter((key) => /^\d+$/.test(String(key)));
+        if (numericKeys.length) {
+          return numericKeys
+            .sort((a, b) => Number(a) - Number(b))
+            .map((key) => {
+              const value = chapterData[key];
+              return {
+                verse: Number(key),
+                text: typeof value === "string" ? value : (value?.text ?? value?.texto ?? value?.content ?? value?.conteudo ?? value?.conteúdo ?? "")
+              };
+            })
+            .filter((item) => item.text);
+        }
+      }
+
+      return [];
+    }
+
+    async function runSearch(event) {
+      if (event) event.preventDefault();
+      const book = resolveBook(bookInput.value);
+      const chapter = Number(chapterInput.value);
+      const start = startInput.value ? Number(startInput.value) : null;
+      const end = endInput.value ? Number(endInput.value) : start;
+
+      if (!book) {
+        setError("Digite um livro válido. Ex.: João, Tobias, Sabedoria, 1 Macabeus...");
+        return;
+      }
+      if (!Number.isInteger(chapter) || chapter < 1) {
+        setError("Informe um capítulo válido.");
+        return;
+      }
+      if (start !== null && (!Number.isInteger(start) || start < 1)) {
+        setError("Informe um versículo inicial válido.");
+        return;
+      }
+      if (end !== null && (!Number.isInteger(end) || end < 1)) {
+        setError("Informe um versículo final válido.");
+        return;
+      }
+      if (start !== null && end !== null && end < start) {
+        setError("O versículo final deve ser maior ou igual ao inicial.");
+        return;
+      }
+
+      setLoading();
+      try {
+        const payload = await fetchBible();
+        const bookData = findBookData(payload, book);
+        if (!bookData) {
+          setError(`Não encontrei o livro ${book.pt} na Bíblia católica em português.`);
+          return;
+        }
+        const chapterData = findChapterData(bookData, chapter);
+        if (!chapterData) {
+          setError(`Não encontrei o capítulo ${chapter} em ${book.pt}.`);
+          return;
+        }
+
+        const verses = extractVerses(chapterData).filter((verse) => {
+          const current = Number(verse.verse);
+          if (start === null && end === null) return true;
+          return current >= (start || 1) && current <= (end || start || current);
+        });
+
+        if (!verses.length) {
+          setError("Não encontrei versículos nesse intervalo.");
+          return;
+        }
+
+        renderResult({ book, chapter, verses });
+        history.replaceState(null, "", buildShareUrl(book, chapterInput.value, startInput.value, endInput.value));
+        updateSuggestions();
+      } catch (err) {
+        setError(err?.message || "Algo deu errado ao buscar o texto bíblico.");
+      }
+    }
+
+    copyBtn.addEventListener("click", async () => {
+      const book = resolveBook(bookInput.value);
+      if (!book) return;
+      const url = buildShareUrl(book, chapterInput.value, startInput.value, endInput.value);
+      try {
+        await navigator.clipboard.writeText(url);
+        const original = copyBtn.textContent;
+        copyBtn.textContent = "Link copiado!";
+        setTimeout(() => (copyBtn.textContent = original), 1800);
+      } catch (_) {}
+    });
+
+    document.querySelectorAll("[data-example]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const data = JSON.parse(button.dataset.example);
+        bookInput.value = data.book;
+        chapterInput.value = data.chapter;
+        startInput.value = data.start;
+        endInput.value = data.end;
+        updateSuggestions();
+      });
+    });
+
+    bookInput.addEventListener("input", updateSuggestions);
+    searchForm.addEventListener("submit", runSearch);
+
+    (function hydrateFromUrl() {
+      const params = new URLSearchParams(window.location.search);
+      const livro = params.get("livro");
+      const capitulo = params.get("capitulo");
+      const inicio = params.get("inicio");
+      const fim = params.get("fim");
+      if (livro) bookInput.value = livro;
+      if (capitulo) chapterInput.value = capitulo;
+      if (inicio) startInput.value = inicio;
+      if (fim) endInput.value = fim;
+      updateSuggestions();
+      if (resolveBook(bookInput.value) && capitulo) runSearch();
+    })();
+
+    updateSuggestions();
+  </script>
+</body>
+</html>
